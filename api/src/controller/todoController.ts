@@ -3,28 +3,27 @@ import { validateTodo } from "../utils/validation.ts";
 import { ITodo } from "../model/todoModel.ts";
 
 const db = await MongoDatabase.getInstance();
+
 const tododDb = db.getDatabase.collection<ITodo>("todo");
 
 // deno-lint-ignore no-explicit-any
-export const getAll = (context: any) => {
+export const getAll = async (context: any) => {
   console.log("Getting All todos");
-  // let res: Record<string, unknown>;
-  const result = tododDb.find();
-
-  console.log(result);
-  // try {
-  //   const result = tododDb.find();
-  //   res = {
-  //     success: true,
-  //     data: result,
-  //   };
-  // } catch (err) {
-  //   res = {
-  //     success: false,
-  //     err,
-  //   };
-  // }
-  // context.response.body = JSON.stringify(res);
+  let res: Record<string, unknown>;
+  try {
+    const result = await tododDb.find().toArray();
+    res = {
+      success: true,
+      length: result.length,
+      data: result,
+    };
+  } catch (err) {
+    res = {
+      success: false,
+      err,
+    };
+  }
+  context.response.body = JSON.stringify(res);
 };
 
 // deno-lint-ignore no-explicit-any

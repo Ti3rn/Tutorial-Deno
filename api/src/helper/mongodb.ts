@@ -28,8 +28,6 @@ class MongoDatabase {
       MongoDatabase.instance = new MongoDatabase();
     }
     await MongoDatabase.instance.connect();
-    // const mongoDB = new MongoDatabase();
-    // await mongoDB.connect();
     return this.instance;
   }
 }
