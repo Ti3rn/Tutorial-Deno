@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "start": {
+      "cmd": "deno run src/main.ts",
+      "allow": ["env", "net", "write", "read", "plugin"],
+      "unstable": true
+    },
+    "watch": true
+  }
+}
