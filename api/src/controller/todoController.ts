@@ -21,7 +21,7 @@ export const getAll = async (context: any) => {
   } catch (err) {
     res = {
       success: false,
-      err,
+      err: "Request fail",
     };
   }
   context.response.body = JSON.stringify(res);
@@ -30,11 +30,14 @@ export const getAll = async (context: any) => {
 // deno-lint-ignore no-explicit-any
 export const get = async (context: any) => {
   const id: string = context.params.id;
+  const msgErrorNotFound = "Not found";
   console.log(`Getting todo ${id}`);
   let res: Record<string, unknown>;
   try {
     const result = await tododDb.findOne({ _id: new Bson.ObjectId(id) });
-    console.log(result);
+    if (!result) {
+      throw new Error(msgErrorNotFound);
+    }
     res = {
       success: true,
       data: result,
@@ -42,8 +45,13 @@ export const get = async (context: any) => {
   } catch (err) {
     res = {
       success: false,
-      err,
+      error: err.toString(),
     };
+    if (err.message === msgErrorNotFound) {
+      context.response.status = 404;
+    } else {
+      context.response.status = 500;
+    }
   }
   context.response.body = JSON.stringify(res);
 };
