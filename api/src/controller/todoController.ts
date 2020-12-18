@@ -1,6 +1,7 @@
 import MongoDatabase from "../helper/mongodb.ts";
 import { validateTodo } from "../utils/validation.ts";
 import { ITodo } from "../model/todoModel.ts";
+import { Bson } from "../../deps.ts";
 
 const db = await MongoDatabase.getInstance();
 
@@ -27,27 +28,24 @@ export const getAll = async (context: any) => {
 };
 
 // deno-lint-ignore no-explicit-any
-export const get = (context: any) => {
-  console.log("Getting a todo");
+export const get = async (context: any) => {
+  const id: string = context.params.id;
+  console.log(`Getting todo ${id}`);
+  let res: Record<string, unknown>;
   try {
-    const todo = {
-      title: "My Todo",
-      description: "Todo description",
-      createdAt: new Date(),
-    };
-    const response = {
+    const result = await tododDb.findOne({ _id: new Bson.ObjectId(id) });
+    console.log(result);
+    res = {
       success: true,
-      todo,
+      data: result,
     };
-    context.response.body = JSON.stringify(response);
-  } catch (error) {
-    const response = {
+  } catch (err) {
+    res = {
       success: false,
-      error,
+      err,
     };
-    context.response.status = 500;
-    context.response.body = JSON.stringify(response);
   }
+  context.response.body = JSON.stringify(res);
 };
 
 // deno-lint-ignore no-explicit-any
